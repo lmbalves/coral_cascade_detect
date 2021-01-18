@@ -95,7 +95,7 @@ void detectAndDisplay( Mat frame )
     }
     auto t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
-    std::cout << duration/1000 << "ms\n";
+    std::cout << duration << "\n";
     //-- Show what you got
     imshow( "Capture - Face detection", frame );
 }
