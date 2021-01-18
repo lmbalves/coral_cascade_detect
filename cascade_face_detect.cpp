@@ -79,7 +79,7 @@ void detectAndDisplay( Mat frame )
     omp_set_num_threads(3);
     Mat faceROI;
     std::vector<Rect> eyes;
-    #pragma omp parallel shared(faces, frame_gray, faceROI, eyes)
+    #pragma omp parallel shared(faces, frame_gray, frame)
     {
         #pragma omp sections
         {
