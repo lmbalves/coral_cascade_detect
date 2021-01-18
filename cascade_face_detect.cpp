@@ -13,6 +13,9 @@ CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
 int main( int argc, const char** argv )
 {
+    omp_set_dynamic(0);
+    omp_set_num_threads(4);
+
    /* CommandLineParser parser(argc, argv,
                              "{help h||}"
                              "{face_cascade|data/haarcascades/haarcascade_frontalface_alt.xml|Path to face cascade.}"
