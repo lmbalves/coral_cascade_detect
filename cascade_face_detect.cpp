@@ -8,7 +8,7 @@
 using namespace std;
 using namespace cv;
 void detectAndDisplay( Mat frame );
-omp_set_dynamic(4);
+
 CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
 int main( int argc, const char** argv )
@@ -78,7 +78,7 @@ void detectAndDisplay( Mat frame )
     {
     face_cascade.detectMultiScale( frame_gray, faces );
     
-    #pragma omp for
+    #pragma omp for schedule(dynamic)
     for ( size_t i = 0; i < faces.size(); i++ )
     {
         Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 );
