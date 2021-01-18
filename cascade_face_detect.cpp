@@ -77,11 +77,11 @@ void detectAndDisplay( Mat frame )
     std::vector<Rect> faces;
     omp_set_dynamic(0);
     omp_set_num_threads(4);
-    #pragma omp parallel schedule (chunk)
+    #pragma omp parallel
     {
         face_cascade.detectMultiScale( frame_gray, faces );
     
-        #pragma omp for
+        #pragma omp for parallel schedule (chunk)
 
         for ( size_t i = 0; i < faces.size(); i++ )
         {
