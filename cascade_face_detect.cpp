@@ -98,11 +98,11 @@ void detectAndDisplay( Mat frame )
             circle( frame, eye_center, radius, Scalar( 255, 0, 0 ), 4 );
         }
     }
-    
+    }
     auto t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
     std::cout << duration << "\n";
     //-- Show what you got
     imshow( "Capture - Face detection", frame );
-    }
+    
 }
