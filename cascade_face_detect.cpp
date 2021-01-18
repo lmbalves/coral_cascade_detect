@@ -81,7 +81,7 @@ void detectAndDisplay( Mat frame )
     {
         face_cascade.detectMultiScale( frame_gray, faces );
     
-        #pragma omp for schedule (static)
+        #pragma omp for schedule (dynamic)
 
         for ( size_t i = 0; i < faces.size(); i++ )
         {
