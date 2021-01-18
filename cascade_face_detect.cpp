@@ -13,7 +13,7 @@ CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
 int main( int argc, const char** argv )
 {
-    omp_set_dynamic(0);
+    omp_set_dynamic(4);
     omp_set_num_threads(4);
 
    /* CommandLineParser parser(argc, argv,
