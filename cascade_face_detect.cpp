@@ -78,26 +78,27 @@ void detectAndDisplay( Mat frame )
     omp_set_dynamic(0);
     omp_set_num_threads(4);
     #pragma omp parallel
+    do
     {
-    face_cascade.detectMultiScale( frame_gray, faces );
+        face_cascade.detectMultiScale( frame_gray, faces );
     
-    #pragma omp for
-    for ( size_t i = 0; i < faces.size(); i++ )
-    {
-        Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 );
-        ellipse( frame, center, Size( faces[i].width/1.5, faces[i].height ), 0, 0, 360, Scalar( 255, 0, 0 ), 4 );
-        Mat faceROI = frame_gray( faces[i] );
-        //-- In each face, detect eyes
-        std::vector<Rect> eyes;
-        eyes_cascade.detectMultiScale( faceROI, eyes );
-        //#pragma omp for
-        for ( size_t j = 0; j < eyes.size(); j++ )
+        #pragma omp for
+        for ( size_t i = 0; i < faces.size(); i++ )
         {
-            Point eye_center( faces[i].x + eyes[j].x + eyes[j].width/2, faces[i].y + eyes[j].y + eyes[j].height/2 );
-            int radius = cvRound( (eyes[j].width + eyes[j].height)*0.25 );
-            circle( frame, eye_center, radius, Scalar( 255, 0, 0 ), 4 );
+            Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 );
+            ellipse( frame, center, Size( faces[i].width/1.5, faces[i].height ), 0, 0, 360, Scalar( 255, 0, 0 ), 4 );
+            Mat faceROI = frame_gray( faces[i] );
+            //-- In each face, detect eyes
+            std::vector<Rect> eyes;
+            eyes_cascade.detectMultiScale( faceROI, eyes );
+            //#pragma omp for
+            for ( size_t j = 0; j < eyes.size(); j++ )
+            {
+                Point eye_center( faces[i].x + eyes[j].x + eyes[j].width/2, faces[i].y + eyes[j].y + eyes[j].height/2 );
+                int radius = cvRound( (eyes[j].width + eyes[j].height)*0.25 );
+                circle( frame, eye_center, radius, Scalar( 255, 0, 0 ), 4 );
+            }
         }
-    }
     }
     auto t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
