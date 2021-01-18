@@ -50,7 +50,7 @@ int main( int argc, const char** argv )
             break;
         }
         //-- 3. Apply the classifier to the frame
-
+        
         detectAndDisplay( frame );
 
         if( waitKey(10) == 27 )
@@ -63,20 +63,18 @@ int main( int argc, const char** argv )
 void detectAndDisplay( Mat frame )
 {
     auto t1 = std::chrono::high_resolution_clock::now(); 
-    
     Mat frame_gray;
 
     cvtColor( frame, frame_gray, COLOR_BGR2GRAY );
     equalizeHist( frame_gray, frame_gray );
+
     
     //-- Detect faces
     std::vector<Rect> faces;
     
-    #pragma omp parallel
-    {
+
     face_cascade.detectMultiScale( frame_gray, faces );
-    
-    #pragma omp for
+
     for ( size_t i = 0; i < faces.size(); i++ )
     {
         Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 );
@@ -91,7 +89,6 @@ void detectAndDisplay( Mat frame )
             int radius = cvRound( (eyes[j].width + eyes[j].height)*0.25 );
             circle( frame, eye_center, radius, Scalar( 255, 0, 0 ), 4 );
         }
-    }
     }
     auto t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
