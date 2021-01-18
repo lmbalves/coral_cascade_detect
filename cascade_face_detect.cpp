@@ -4,9 +4,11 @@
 #include "opencv2/videoio.hpp"
 #include <iostream>
 #include <chrono>
+#include <omp.h>
 using namespace std;
 using namespace cv;
 void detectAndDisplay( Mat frame );
+void omp_set_dynamic(int dynamic_threads);
 CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
 int main( int argc, const char** argv )
