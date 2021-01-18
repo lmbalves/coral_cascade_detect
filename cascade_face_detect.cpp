@@ -8,7 +8,7 @@
 using namespace std;
 using namespace cv;
 void detectAndDisplay( Mat frame );
-void omp_set_dynamic(4);
+omp_set_dynamic(4);
 CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
 int main( int argc, const char** argv )
