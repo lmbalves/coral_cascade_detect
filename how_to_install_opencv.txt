@@ -1,0 +1,233 @@
+This method downloads, extracts, compiles, and installs the latest OpenCV 4.0.1 manually. A working sample code main.cpp is also provided in order to demonstrate as proof of successful OpenCV installation.
+
+    What is OpenCV?
+
+    OpenCV is an image processing library created by Intel and later supported by Willow Garage and now maintained by Itseez, Inc. OpenCV means Intel® Open Source Computer Vision Library. It is a collection of C functions and a few C++ classes that implement some popular Image Processing and Computer Vision algorithms. OpenCV is Available on Mac, Windows, Linux (Terminal environment).
+
+Follow the steps below to install OpenCV:
+
+    Update Ubuntu 18.04.
+
+    Issue the following commands:
+
+    $ sudo apt-get update
+    $ sudo apt-get upgrade
+
+    Install dependencies.
+
+    Issue the following command:
+
+    $ sudo apt-get install build-essential cmake git libgtk2.0-dev pkg-config\
+    libavcodec-dev libavformat-dev libswscale-dev python3.7 python3.7-dev python-numpy\
+    python-scipy python-matplotlib ipython python-pandas python-sympy python-nose\
+    libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff5-dev libjasper-dev\
+    libdc1394-22-dev libeigen3-dev libtheora-dev libvorbis-dev libxvidcore-dev\
+    libx264-dev sphinx-common libtbb-dev yasm libfaac-dev libopencore-amrnb-dev\
+    libopencore-amrwb-dev libopenexr-dev libgstreamer-plugins-base1.0-dev libavutil-dev\
+    libavfilter-dev libavresample-dev
+
+    Get OpenCV: Download opencv 4.0.1 from OpenCV Releases and opencv 4.0.1 testdata opencv_extra-master.zip.
+
+    Extraction of OpenCV 4.0.1 zip package
+
+    Now that you’ve downloaded the correct archive package for your system into ~/Downloads folder, run the following commands to extract OpenCV.
+
+    $ sudo mkdir /opt/opencv
+
+    To extract zip file opencv-4.0.1.zip into /opt/opencv folder, run the following command:
+
+    $ sudo unzip ~/Downloads/opencv-4.0.1.zip -d /opt/opencv
+
+    Now extract opencv_extra-master.zip which is a large file of size 490.3 MB which contain test suit needed to test opencv 4.0.1. Run the following command to complete extraction:
+
+    $ sudo unzip ~/Downloads/opencv_extra-master.zip -d /opt/opencv/opencv-4.0.1
+
+    Setup symlink latest pointing to current version opencv-4.0.1
+
+    Issue the following commands to create symlink:
+
+    $ cd /opt/opencv
+    $ sudo ln -s opencv-4.0.1 latest
+
+    enter image description here
+
+    Why do you need symlink latest?
+        Symlink latest always tracks current version of OpenCV installation.
+
+        Tomorrow, let us say, a new version 5.0.1 arrives, then install that version. Now you remove symlink latest pointing to older version 4.0.1, by issuing the following command:
+
+        $ sudo unlink /opt/opencv/latest
+
+        'Symlink latest' points to current version opencv-4.0.1 but the arrival of newest version 5.0.1 causes to severe the 'symlink latest' from version 4.0.1.
+
+        Now create symlink latest pointing to newer version 5.0.1 with the following command:
+
+        $ sudo ln -s opencv-5.0.1 latest
+
+        Now 'symlink latest' points to newer version opencv-5.0.1. Please note that there is no such version called 5.0.1, this is just a 'fictional' one used to demonstrate the power of 'symlink latest'.
+
+        At the same time, you may still retain older version without removing them. For some reasons you want to work on an older version, you simply switch symlink latest pointing that older version and that is it! You don’t have to change any other settings.
+
+        In step-8 subsequently, you will be setting up PATH,
+        LD_LIBRARY_PATH, PKG_CONFIG_PATH, and OPENCV_TEST_DATA_PATH envirnement variables. The values of all these environment variables involve symlink latest, so that even later you switch pointing to newer version, these settings always remain untouched!
+
+    Installation of OpenCV 4.0.1 zip package
+
+    Create a temporary build directory release, which we denote as <cmake_build_dir>, where you want to put the generated Makefiles, project files as well the object files and output binaries and enter there.
+
+    $ cd /opt/opencv/latest
+    $ sudo mkdir release
+
+    To build and install OpenCV, issue the following command:
+
+    $ cd /opt/opencv/latest/release
+    $ sudo cmake -DCMAKE_BUILD_TYPE=Release -DOPENCV_GENERATE_PKGCONFIG=YES -DCMAKE_INSTALL_PREFIX=/opt/opencv/opencv-4.0.1  /opt/opencv/opencv-4.0.1
+
+    Note:
+        add this flag when running cmake: -D OPENCV_GENERATE_PKGCONFIG=YES
+        will generate the .pc file for pkg-config and install it.
+        useful if not using cmake in projects that use OpenCV.
+
+    From build directory release execute make, it is recommended to do this in several threads:
+
+    $ cd /opt/opencv/latest/release
+    $ sudo make -j4                             # runs 4 jobs in parallel
+    $ sudo make install
+
+    To update the links/cache which the dynamic loader uses:
+
+    $ sudo ldconfig
+
+    Run testsuite locally for opencv-4.0.1
+
+    Before you begin test cases, OPENCV_TEST_DATA_PATH environment variable must be set.
+
+    $ export OPENCV_TEST_DATA_PATH=/opt/opencv/latest/opencv_extra-master/testdata
+
+    Issue the following commands to begin all the test cases:
+
+    $ cd /opt/opencv/latest/release 
+    $ sudo ./bin/opencv_test_core
+
+    Test case Core_globbing.accuracy failed
+
+    Why did test case Core_globbing.accuracy failed?
+
+    We have just built our OpenCV Sources and tried to test the compilation by running "./bin/opencv_test_core" from "/opt/opencv/latest/release" folder.
+
+    This testcase failed because there are no input images, therefore take any .jpg and .png pictures and rename these 2 pictures as lena.jpg and lena.png and copy them into "/opt/opencv/latest/release/bin" folder and re-run all the test cases again.
+
+    Issue the following commands to re-run all the test cases again:
+
+    $ cd /opt/opencv/latest/release 
+    $ sudo ./bin/opencv_test_core
+
+    Test case passed
+
+    Setup PATH environment variable
+
+    OpenCV needs to set PATH environment variables which is to be set as shown below.
+
+    Create a file called opencv.sh under /etc/profile.d/ directory.
+
+    $ sudo touch /etc/profile.d/opencv.sh
+    $ sudo vi /etc/profile.d/opencv.sh
+
+    Add the following contents:
+
+    #!/bin/sh
+    export PATH=/opt/opencv/latest/bin:/opt/opencv/latest/release/bin:${PATH}
+    export LD_LIBRARY_PATH=/opt/opencv/latest/release/lib:$LD_LIBRARY_PATH
+    export PKG_CONFIG_PATH=/opt/opencv/latest/lib/pkgconfig
+    export OPENCV_TEST_DATA_PATH=/opt/opencv/latest/opencv_extra-master/testdata
+
+    Save and close the file. Make it executable using the following command.
+
+    $ sudo chmod +x /etc/profile.d/opencv.sh
+
+    Then, set the environment variables permanently by running the following command:
+
+    $ source /etc/profile.d/opencv.sh
+
+    Log out or reboot your system.
+
+    Now, check the PATH environment variable:
+
+    $ echo $PATH
+
+    PATH environment variable should have /opt/opencv/latest/bin directory and /opt/opencv/latest/release/bin directory.
+
+    Where is opencv4.pc?
+
+    Issue the following commands to locate opencv4.pc:
+
+    $ sudo find /opt -name opencv4.pc
+
+    opencv4.pc would be available in /opt/opencv/latest/lib/pkgconfig directory.
+
+    Now, check the python3.7 version using command:
+
+    $ python3.7 version
+
+    Where is opencv_version binary located?
+
+    Now, check the location of opencv_version using the following command:
+
+    $ sudo updatedb                                      #  rebuild library cache
+    $ locate opencv_version | grep bin/opecv_version
+
+    opencv_version would be located in /opt/opencv/latest/release/bin directory.
+
+    Now, check the opencv_version using command:
+
+    $ opencv_version
+
+    Now to check if OpenCV is installed on a machine, run the following commands:
+
+    $ pkg-config --modversion opencv4
+
+    enter image description here
+
+    Sample testing:
+        Create a folder ~/code directory.
+        Save the following program as main.cpp
+        Move main.cpp into ~/code directory
+        Add a sample.jpg under 1 MB size into ~/code directory for testing.
+
+    Issue the following commands:
+
+    $ cd ~/code
+    $ ls
+
+    Sample code:
+
+    #include <opencv2/highgui.hpp>
+    #include <iostream>
+
+    int main( int argc, char** argv ) {
+
+      cv::Mat image;
+      image = cv::imread("sample.jpg" , cv::IMREAD_COLOR);
+
+      if (! image.data ) {
+          std::cout <<  "Could not open or find the image :";
+          std::cout <<  "sample.jpg" << std::endl ;
+          return -1;
+      }
+
+      cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );
+      cv::imshow( "Display window", image );
+
+      cv::waitKey(0);
+      return 0;
+    }
+
+    Compile main.cpp
+
+    $ cd ~/code
+    $ g++ main.cpp -o output `pkg-config --cflags --libs opencv4`
+
+    Run ./output as follows:
+
+    $ ./output
+
