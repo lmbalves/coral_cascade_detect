@@ -84,6 +84,7 @@ void detectAndDisplay( Mat frame )
         #pragma omp sections
         {
             #pragma omp section
+            {
                 face_cascade.detectMultiScale( frame_gray, faces );
                 for ( size_t i = 0; i < faces.size(); i++ )
                 {
@@ -92,6 +93,7 @@ void detectAndDisplay( Mat frame )
                     faceROI = frame_gray( faces[i] );
                     //-- In each face, detect eyes
                 }
+            }
             #pragma omp section
             {
                 for ( size_t i = 0; i < faces.size(); i++ )
