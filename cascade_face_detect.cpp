@@ -3,6 +3,7 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/videoio.hpp"
 #include <iostream>
+#include <chrono>
 using namespace std;
 using namespace cv;
 void detectAndDisplay( Mat frame );
