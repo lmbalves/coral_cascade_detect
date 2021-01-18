@@ -99,7 +99,7 @@ void detectAndDisplay( Mat frame )
                 {
 
                     //-- In each face, detect eyes
-                    eyes_cascade.detectMultiScale( faceROI, eyes );
+                    eyes_cascade.detectMultiScale( frame_gray, eyes );
                     
                     for ( size_t j = 0; j < eyes.size(); j++ )
                     {
