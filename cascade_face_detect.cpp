@@ -78,11 +78,11 @@ void detectAndDisplay( Mat frame )
     omp_set_dynamic(0);
     omp_set_num_threads(4);
     #pragma omp parallel
-    do
     {
         face_cascade.detectMultiScale( frame_gray, faces );
     
-        #pragma omp for
+        #pragma omp parllel schedule (chunk)
+
         for ( size_t i = 0; i < faces.size(); i++ )
         {
             Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 );
@@ -90,6 +90,7 @@ void detectAndDisplay( Mat frame )
             Mat faceROI = frame_gray( faces[i] );
             //-- In each face, detect eyes
             std::vector<Rect> eyes;
+            #pragma omp single
             eyes_cascade.detectMultiScale( faceROI, eyes );
             //#pragma omp for
             for ( size_t j = 0; j < eyes.size(); j++ )
