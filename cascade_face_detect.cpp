@@ -90,7 +90,7 @@ void detectAndDisplay( Mat frame )
             Mat faceROI = frame_gray( faces[i] );
             //-- In each face, detect eyes
             std::vector<Rect> eyes;
-            #pragma omp single
+            #pragma omp parallel
             eyes_cascade.detectMultiScale( faceROI, eyes );
             //#pragma omp for
             for ( size_t j = 0; j < eyes.size(); j++ )
