@@ -91,6 +91,7 @@ void detectAndDisplay( Mat frame )
                     Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 );
                     ellipse( frame, center, Size( faces[i].width/1.5, faces[i].height ), 0, 0, 360, Scalar( 255, 0, 0 ), 4 );
                     faceROI = frame_gray( faces[i] );
+                }
             }
             #pragma omp section
             {
@@ -107,13 +108,12 @@ void detectAndDisplay( Mat frame )
                         circle( frame, eye_center, radius, Scalar( 255, 0, 0 ), 4 );
                     }
                 }
+                auto t2 = std::chrono::high_resolution_clock::now();
+                auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+                std::cout << duration << "\n";
+                //-- Show what you got
+                imshow( "Capture - Face detection", frame );
             }
         }
     }
-    auto t2 = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
-    std::cout << duration << "\n";
-    //-- Show what you got
-    imshow( "Capture - Face detection", frame );
-    
 }
