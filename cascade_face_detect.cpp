@@ -79,13 +79,13 @@ void detectAndDisplay( Mat frame )
     omp_set_num_threads(3);
     Mat faceROI;
     std::vector<Rect> eyes;
-    #pragma omp parallel shared(faces, frame_gray, frame)
+    #pragma omp parallel shared(faces, frame_gray, frame, faceROI)
     {
         #pragma omp sections
         {
             #pragma omp section
             {
-                face_cascade.detectMultiScale( frame_gray, faces, faceROI );
+                face_cascade.detectMultiScale( frame_gray, faces);
                 for ( size_t i = 0; i < faces.size(); i++ )
                 {
                     Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 );
