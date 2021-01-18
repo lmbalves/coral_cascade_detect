@@ -13,7 +13,7 @@ CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
 int main( int argc, const char** argv )
 {
-    //omp_set_dynamic(4);
+    omp_set_dynamic(4);
     omp_set_num_threads(4);
 
    /* CommandLineParser parser(argc, argv,
@@ -90,7 +90,7 @@ void detectAndDisplay( Mat frame )
         //-- In each face, detect eyes
         std::vector<Rect> eyes;
         eyes_cascade.detectMultiScale( faceROI, eyes );
-        #pragma omp for
+        //#pragma omp for
         for ( size_t j = 0; j < eyes.size(); j++ )
         {
             Point eye_center( faces[i].x + eyes[j].x + eyes[j].width/2, faces[i].y + eyes[j].y + eyes[j].height/2 );
