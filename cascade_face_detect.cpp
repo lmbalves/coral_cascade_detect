@@ -78,6 +78,7 @@ void detectAndDisplay( Mat frame )
     omp_set_dynamic(2);
     omp_set_num_threads(3);
     Mat faceROI;
+    std::vector<Rect> eyes;
     #pragma omp parallel shared(faces, frame_gray, faceROI, eyes)
     {
         #pragma omp sections
@@ -94,7 +95,7 @@ void detectAndDisplay( Mat frame )
                     ellipse( frame, center, Size( faces[i].width/1.5, faces[i].height ), 0, 0, 360, Scalar( 255, 0, 0 ), 4 );
                     faceROI = frame_gray( faces[i] );
                     //-- In each face, detect eyes
-                    std::vector<Rect> eyes;
+                    
             
                     eyes_cascade.detectMultiScale( faceROI, eyes );
                     
