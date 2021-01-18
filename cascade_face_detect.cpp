@@ -13,8 +13,7 @@ CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
 int main( int argc, const char** argv )
 {
-    omp_set_dynamic(0);
-    omp_set_num_threads(4);
+
 
    /* CommandLineParser parser(argc, argv,
                              "{help h||}"
@@ -76,7 +75,8 @@ void detectAndDisplay( Mat frame )
     
     //-- Detect faces
     std::vector<Rect> faces;
-    
+    omp_set_dynamic(0);
+    omp_set_num_threads(4);
     #pragma omp parallel
     {
     face_cascade.detectMultiScale( frame_gray, faces );
