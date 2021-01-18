@@ -85,6 +85,7 @@ void detectAndDisplay( Mat frame )
         //-- In each face, detect eyes
         std::vector<Rect> eyes;
         eyes_cascade.detectMultiScale( faceROI, eyes );
+        #pragma omp for
         for ( size_t j = 0; j < eyes.size(); j++ )
         {
             Point eye_center( faces[i].x + eyes[j].x + eyes[j].width/2, faces[i].y + eyes[j].y + eyes[j].height/2 );
