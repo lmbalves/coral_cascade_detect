@@ -91,7 +91,7 @@ void detectAndDisplay( Mat frame )
             }               
         }
 
-        #pragma omp atomic
+        #pragma omp critical
         {
             auto t2 = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
