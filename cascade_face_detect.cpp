@@ -73,7 +73,7 @@ void detectAndDisplay( Mat frame )
     
     //-- Detect faces
     
-    omp_set_num_threads(4);
+    omp_set_num_threads(2);
     std::vector<Rect> faces;
     std::vector<Rect> eyes;
     auto t1 = std::chrono::high_resolution_clock::now();
