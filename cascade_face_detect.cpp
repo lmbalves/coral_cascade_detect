@@ -75,43 +75,36 @@ void detectAndDisplay( Mat frame )
     
     //-- Detect faces
     std::vector<Rect> faces;
-    //omp_set_dynamic(2);
-    omp_set_num_threads(3);
-    Mat faceROI;
+    omp_set_num_threads(4);
     std::vector<Rect> eyes;
-    #pragma omp parallel shared(faces, frame_gray, frame, faceROI)
+    #pragma omp parallel
     {
         #pragma omp sections
         {
             #pragma omp section
             {
                 face_cascade.detectMultiScale( frame_gray, faces);
-                for ( size_t i = 0; i < faces.size(); i++ )
-                {
-                    Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 );
-                    ellipse( frame, center, Size( faces[i].width/1.5, faces[i].height ), 0, 0, 360, Scalar( 255, 0, 0 ), 4 );
-                    faceROI = frame_gray( faces[i] );
-                }
             }
             #pragma omp section
-            {
-                for ( size_t i = 0; i < faces.size(); i++ )
-                {
-
-                    //-- In each face, detect eyes
-                    eyes_cascade.detectMultiScale( frame_gray, eyes );
-                    
-                    for ( size_t j = 0; j < eyes.size(); j++ )
-                    {
-                        Point eye_center( faces[i].x + eyes[j].x + eyes[j].width/2, faces[i].y + eyes[j].y + eyes[j].height/2 );
-                        int radius = cvRound( (eyes[j].width + eyes[j].height)*0.25 );
-                        circle( frame, eye_center, radius, Scalar( 255, 0, 0 ), 4 );
-                    }
-                }
-
-                //-- Show what you got
-                imshow( "Capture - Face detection", frame );
+            {                    
+                //-- detect eyes
+                eyes_cascade.detectMultiScale( frame_gray, eyes );
             }
+
+            for ( size_t j = 0; j < eyes.size(); j++ )
+            {
+                Point eye_center( eyes[j].x + eyes[j].width/2, eyes[j].y + eyes[j].height/2 );
+                int radius = cvRound( (eyes[j].width + eyes[j].height)*0.25 );
+                circle( frame, eye_center, radius, Scalar( 255, 0, 0 ), 4 );
+            }
+            for ( size_t i = 0; i < faces.size(); i++ )
+            {
+                Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 );
+                ellipse( frame, center, Size( faces[i].width/1.5, faces[i].height ), 0, 0, 360, Scalar( 255, 0, 0 ), 4 );
+            }
+                        //-- Show what you got
+            imshow( "Capture - Face detection", frame );
+                            
         }
     }
     auto t2 = std::chrono::high_resolution_clock::now();
