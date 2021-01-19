@@ -90,25 +90,25 @@ void detectAndDisplay( Mat frame )
                 eyes_cascade.detectMultiScale( frame_gray, eyes );
             }               
         }
-    }
-    #pragma omp atomic
-    {
-        auto t2 = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
-        std::cout << duration << "\n";
 
-        for ( size_t j = 0; j < eyes.size(); j++ )
+        #pragma omp atomic
+        {
+            auto t2 = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+            std::cout << duration << "\n";
+
+            for ( size_t j = 0; j < eyes.size(); j++ )
             {
                 Point eye_center( eyes[j].x + eyes[j].width/2, eyes[j].y + eyes[j].height/2 );
                 int radius = cvRound( (eyes[j].width + eyes[j].height)*0.25 );
                 circle( frame, eye_center, radius, Scalar( 255, 0, 0 ), 4 );
             }
-        for ( size_t i = 0; i < faces.size(); i++ )
+            for ( size_t i = 0; i < faces.size(); i++ )
             {
                 Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 );
                 ellipse( frame, center, Size( faces[i].width/1.5, faces[i].height ), 0, 0, 360, Scalar( 255, 0, 0 ), 4 );
             }
-
-        imshow( "Capture - Face detection", frame );
+            imshow( "Capture - Face detection", frame );
+        }
     }
 }
