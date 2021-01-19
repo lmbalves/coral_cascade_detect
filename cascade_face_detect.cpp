@@ -66,8 +66,6 @@ int main( int argc, const char** argv )
 }
 void detectAndDisplay( Mat frame )
 {
-    auto t1 = std::chrono::high_resolution_clock::now(); 
-    
     Mat frame_gray;
 
     cvtColor( frame, frame_gray, COLOR_BGR2GRAY );
@@ -78,6 +76,7 @@ void detectAndDisplay( Mat frame )
     omp_set_num_threads(4);
     std::vector<Rect> faces;
     std::vector<Rect> eyes;
+    auto t1 = std::chrono::high_resolution_clock::now();
     #pragma omp parallel
     {
         #pragma omp sections
@@ -92,6 +91,10 @@ void detectAndDisplay( Mat frame )
             }               
         }
     }
+    auto t2 = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+    std::cout << duration << "\n";
+    #pragma omp atomic
     for ( size_t j = 0; j < eyes.size(); j++ )
             {
                 Point eye_center( eyes[j].x + eyes[j].width/2, eyes[j].y + eyes[j].height/2 );
@@ -103,8 +106,6 @@ void detectAndDisplay( Mat frame )
                 Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 );
                 ellipse( frame, center, Size( faces[i].width/1.5, faces[i].height ), 0, 0, 360, Scalar( 255, 0, 0 ), 4 );
             }
+
     imshow( "Capture - Face detection", frame );
-    auto t2 = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
-    std::cout << duration << "\n";
 }

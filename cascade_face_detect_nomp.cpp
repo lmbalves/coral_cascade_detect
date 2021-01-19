@@ -62,7 +62,7 @@ int main( int argc, const char** argv )
 }
 void detectAndDisplay( Mat frame )
 {
-    auto t1 = std::chrono::high_resolution_clock::now(); 
+    
     Mat frame_gray;
 
     cvtColor( frame, frame_gray, COLOR_BGR2GRAY );
@@ -72,7 +72,7 @@ void detectAndDisplay( Mat frame )
     //-- Detect faces
     std::vector<Rect> faces;
     
-
+    auto t1 = std::chrono::high_resolution_clock::now(); 
     face_cascade.detectMultiScale( frame_gray, faces );
 
     for ( size_t i = 0; i < faces.size(); i++ )
