@@ -76,7 +76,7 @@ void detectAndDisplay( Mat frame )
     //-- Detect faces
     std::vector<Rect> faces;
     omp_set_num_threads(4);
-    std::vector<Rect> eyes;
+    
     #pragma omp parallel
     {
         #pragma omp sections
@@ -103,10 +103,11 @@ void detectAndDisplay( Mat frame )
                 ellipse( frame, center, Size( faces[i].width/1.5, faces[i].height ), 0, 0, 360, Scalar( 255, 0, 0 ), 4 );
             }
                         //-- Show what you got
-            imshow( "Capture - Face detection", frame );
+ 
                             
         }
     }
+    imshow( "Capture - Face detection", frame );
     auto t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
     std::cout << duration << "\n";
