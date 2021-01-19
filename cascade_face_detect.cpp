@@ -95,6 +95,7 @@ void detectAndDisplay( Mat frame )
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
     std::cout << duration << "\n";
     #pragma omp atomic
+    {
     for ( size_t j = 0; j < eyes.size(); j++ )
             {
                 Point eye_center( eyes[j].x + eyes[j].width/2, eyes[j].y + eyes[j].height/2 );
@@ -108,4 +109,5 @@ void detectAndDisplay( Mat frame )
             }
 
     imshow( "Capture - Face detection", frame );
+    }
 }
