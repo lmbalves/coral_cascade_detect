@@ -57,19 +57,18 @@ int main( int argc, const char** argv )
 void detectAndDisplay( Mat frame, int NUM_THREADS )
 {
     Mat frame_gray;
-
-    cvtColor( frame, frame_gray, COLOR_BGR2GRAY );
-    equalizeHist( frame_gray, frame_gray );
-
     std::vector<Rect> faces;
     std::vector<Rect> eyes;
     auto t1 = std::chrono::high_resolution_clock::now();
-    #pragma omp parallel num_threads( NUM_THREADS)
+ #pragma omp parallel num_threads( NUM_THREADS)
     {
-                face_cascade.detectMultiScale( frame_gray, faces);
+    cvtColor( frame, frame_gray, COLOR_BGR2GRAY );
+    equalizeHist( frame_gray, frame_gray );
+    }
+    face_cascade.detectMultiScale( frame_gray, faces);
 /*                         printf("Hello World... from thread = %d\n", 
                omp_get_thread_num()); */ 
-    }
+
     auto t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
     std::cout << duration << "\n";
