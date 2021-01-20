@@ -7,36 +7,26 @@
 #include <omp.h>
 using namespace std;
 using namespace cv;
-void detectAndDisplay( Mat frame );
-int NUM_THREADS = 3;
+void detectAndDisplay( Mat frame, int NUM_THREADS );
 
 CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
 int main( int argc, const char** argv )
 {
-
-   /* CommandLineParser parser(argc, argv,
+    CommandLineParser parser(argc, argv,
                              "{help h||}"
-                             "{face_cascade|data/haarcascades/haarcascade_frontalface_alt.xml|Path to face cascade.}"
-                             "{eyes_cascade|data/haarcascades/haarcascade_eye_tree_eyeglasses.xml|Path to eyes cascade.}"
-                             "{camera|0|Camera device number.}");
-    parser.about( "\nThis program demonstrates using the cv::CascadeClassifier class to detect objects (Face + eyes) in a video stream.\n"
-                  "You can use Haar or LBP features.\n\n" );
-    parser.printMessage();*/
-    String face_cascade_name = "haarcascade_frontalface_alt.xml"/* samples::findFile( parser.get<String>("face_cascade") )*/;
-    String eyes_cascade_name = "haarcascade_eye_tree_eyeglasses.xml"/*samples::findFile( parser.get<String>("eyes_cascade") )*/;
+                             "{threads|1|number of threads.}");
+    parser.about( "\nThis program demonstrates using the cv::CascadeClassifier class to detect objects (Face) in a video stream.\n\n");
+    parser.printMessage();
+    String face_cascade_name = "haarcascade_frontalface_alt_tree.xml"/* samples::findFile( parser.get<String>("face_cascade") )*/;
     //-- 1. Load the cascades
     if( !face_cascade.load( face_cascade_name ) )
     {
         cout << "--(!)Error loading face cascade\n";
         return -1;
     };
-    if( !eyes_cascade.load( eyes_cascade_name ) )
-    {
-        cout << "--(!)Error loading eyes cascade\n";
-        return -1;
-    };
-    int camera_device = 0/*parser.get<int>("camera")*/;
+    int camera_device = 0;
+    int NUM_THREADS = parser.get<int>("threads");
     VideoCapture capture;
     //-- 2. Read the video stream
     capture.open( camera_device );
@@ -55,7 +45,7 @@ int main( int argc, const char** argv )
         }
         //-- 3. Apply the classifier to the frame
 
-        detectAndDisplay( frame );
+        detectAndDisplay( frame, NUM_THREADS );
 
         if( waitKey(10) == 27 )
         {
@@ -64,7 +54,7 @@ int main( int argc, const char** argv )
     }
     return 0;
 }
-void detectAndDisplay( Mat frame )
+void detectAndDisplay( Mat frame, int NUM_THREADS )
 {
     Mat frame_gray;
 
@@ -76,32 +66,17 @@ void detectAndDisplay( Mat frame )
     auto t1 = std::chrono::high_resolution_clock::now();
     #pragma omp parallel num_threads( NUM_THREADS)
     {
-/*         #pragma omp sections
-        {
-            #pragma omp section
-            { */
                 face_cascade.detectMultiScale( frame_gray, faces);
-/*            }
-            #pragma omp section
-            {                    
-                eyes_cascade.detectMultiScale( frame_gray, eyes );
-            }               
-        } */
+                        printf("Hello World... from thread = %d\n", 
+               omp_get_thread_num()); 
     }
     auto t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
     std::cout << duration << "\n";
-
-/*     for (size_t j = 0; j < eyes.size(); j++)
-    {
-        Point eye_center(eyes[j].x + eyes[j].width / 2, eyes[j].y + eyes[j].height / 2);
-        int radius = cvRound((eyes[j].width + eyes[j].height) * 0.25);
-        circle(frame, eye_center, radius, Scalar(255, 0, 0), 4);
-    } */
     for (size_t i = 0; i < faces.size(); i++)
     {
         Point center(faces[i].x + faces[i].width / 2, faces[i].y + faces[i].height / 2);
-        ellipse(frame, center, Size(faces[i].width / 1.5, faces[i].height), 0, 0, 360, Scalar(255, 0, 0), 4);
+        ellipse(frame, center, Size(faces[i].width / 1.2, faces[i].height/1.2), 0, 0, 360, Scalar(255, 0, 0), 4);
     }
     imshow("Capture - Face detection", frame);
 }
