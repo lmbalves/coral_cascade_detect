@@ -67,8 +67,8 @@ void detectAndDisplay( Mat frame, int NUM_THREADS )
     #pragma omp parallel num_threads( NUM_THREADS)
     {
                 face_cascade.detectMultiScale( frame_gray, faces);
-                        printf("Hello World... from thread = %d\n", 
-               omp_get_thread_num()); 
+/*                         printf("Hello World... from thread = %d\n", 
+               omp_get_thread_num()); */ 
     }
     auto t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
