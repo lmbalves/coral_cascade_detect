@@ -8,7 +8,7 @@
 using namespace std;
 using namespace cv;
 void detectAndDisplay( Mat frame );
-int NUM_THREADS = 2;
+int NUM_THREADS = 3;
 
 CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
