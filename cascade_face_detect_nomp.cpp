@@ -13,7 +13,7 @@ CascadeClassifier eyes_cascade;
 int main( int argc, const char** argv )
 {
 
-    String face_cascade_name = "haarcascade_frontalface.xml";
+    String face_cascade_name = "haarcascade_frontalface_alt.xml";
     //-- 1. Load the cascades
     if( !face_cascade.load( face_cascade_name ) )
     {
@@ -39,10 +39,10 @@ int main( int argc, const char** argv )
             break;
         }
         //-- 3. Apply the classifier to the frame
-        #pragma omp single
-        {
+//        #pragma omp parallel
+//        {
         detectAndDisplay( frame );
-        }
+//        }
 
         if( waitKey(10) == 27 )
         {
@@ -63,7 +63,11 @@ void detectAndDisplay( Mat frame )
     std::vector<Rect> faces;
     
     auto t1 = std::chrono::high_resolution_clock::now(); 
-    face_cascade.detectMultiScale( frame_gray, faces );
+    #pragma omp parallel
+    {
+        face_cascade.detectMultiScale( frame_gray, faces );
+    }
+    
 
     auto t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();

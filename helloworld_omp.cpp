@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 { 
   
     // Beginning of parallel region 
-    #pragma omp parallel 
+    #pragma omp parallel
     { 
   
         printf("Hello World... from thread = %d\n", 
