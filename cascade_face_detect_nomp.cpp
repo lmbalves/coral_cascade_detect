@@ -76,14 +76,15 @@ void detectAndDisplay(Mat frame)
     
     face_cascade.detectMultiScale(frame_gray, faces);
 
-    eyes_cascade.detectMultiScale(frame_gray, eyes);
+    
 
     auto t2 = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(t2 - t1).count();
     std::cout << duration << "\n";
 
-    for (size_t j = 0; j < eyes.size(); j++)
+    for (size_t j = 0; j < faces.size(); j++)
     {
+        eyes_cascade.detectMultiScale(frame_gray, eyes);
         Point eye_center(eyes[j].x + eyes[j].width / 2, eyes[j].y + eyes[j].height / 2);
         int radius = cvRound((eyes[j].width + eyes[j].height) * 0.25);
         circle(frame, eye_center, radius, Scalar(255, 0, 0), 4);
