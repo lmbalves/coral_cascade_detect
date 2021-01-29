@@ -17,7 +17,7 @@ CascadeClassifier eyes_cascade;
 int main(int argc, const char **argv)
 {
 
-    String face_cascade_name = "haarcascade_frontalface_alt.xml";
+    String face_cascade_name = "haarcascade_frontalface_alt_tree.xml";
     String eyes_cascade_name = "haarcascade_eye_tree_eyeglasses.xml";
     //-- 1. Load the cascades
     if (!face_cascade.load(face_cascade_name))
@@ -30,8 +30,8 @@ int main(int argc, const char **argv)
         cout << "--(!)Error loading eyes cascade\n";
         return -1;
     };
-    int camera_device = 0;
-    VideoCapture capture;
+    auto camera_device = 0;
+    VideoCapture capture(camera_device);
     //-- 2. Read the video stream
     capture.open(camera_device);
     if (!capture.isOpened())
@@ -80,11 +80,11 @@ void detectAndDisplay(Mat frame)
             //printf("Hello World... from thread = %d\n",
             //       omp_get_thread_num());
 
-        #pragma omp section
-            face_cascade.detectMultiScale(frame_gray, faces);
+            #pragma omp section
+                face_cascade.detectMultiScale(frame_gray, faces);
 
-        #pragma omp section
-            eyes_cascade.detectMultiScale(frame_gray, eyes);
+            #pragma omp section
+                eyes_cascade.detectMultiScale(frame_gray, eyes);
         }
         #pragma omp critical
         {

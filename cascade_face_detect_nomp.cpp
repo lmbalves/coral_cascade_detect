@@ -66,9 +66,7 @@ void detectAndDisplay(Mat frame)
     equalizeHist(frame_gray, frame_gray);
 
     //-- Detect faces
-    //cout << "Total Devices: " << omp_get_num_devices() << endl;
-    //omp_set_default_device
-    omp_set_num_threads(2);
+
     std::vector<Rect> faces;
     std::vector<Rect> eyes;
 
