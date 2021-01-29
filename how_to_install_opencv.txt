@@ -81,7 +81,7 @@ Follow the steps below to install OpenCV:
     To build and install OpenCV, issue the following command:
 
     $ cd /opt/opencv/latest/release
-    $ sudo cmake -DCMAKE_BUILD_TYPE=Release -DOPENCV_GENERATE_PKGCONFIG=YES -DCMAKE_INSTALL_PREFIX=/opt/opencv/opencv-4.0.1  /opt/opencv/opencv-4.0.1
+    $ sudo cmake -DCMAKE_BUILD_TYPE=Release -DOPENCV_GENERATE_PKGCONFIG=YES -DCMAKE_INSTALL_PREFIX=/opt/opencv/opencv-4.5.1  -D INSTALL_C_EXAMPLES=ON -D INSTALL_PYTHON_EXAMPLES=ON -D WITH_TBB=OFF -D WITH_V4L=ON -D WITH_QT=OFF -D WITH_OPENGL=OFF -D BUILD_EXAMPLES=ON -D OPENCV_ENABLE_NONFREE=ON -D ENABLE_FAST_MATH=1 -D ENABLE_NEON=OFF -D WITH_LIBV4L=ON -D WITH_OPENMP=OFF -DWITH_IPP=OFF -DWITH_TBB=OFF -DWITH_PTHREADS_PF=OFF /opt/opencv/opencv-4.5.1
 
     Note:
         add this flag when running cmake: -D OPENCV_GENERATE_PKGCONFIG=YES
