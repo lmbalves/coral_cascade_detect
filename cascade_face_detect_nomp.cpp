@@ -13,12 +13,15 @@ void detectAndDisplay(Mat frame);
 
 CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
+CascadeClassifier profile_cascade;
+
 
 int main(int argc, const char **argv)
 {
 
     String face_cascade_name = "haarcascade_frontalface_alt.xml";
     String eyes_cascade_name = "haarcascade_eye_tree_eyeglasses.xml";
+    String profile_cascade_name = "haarcascade_profileface.xml";
     //-- 1. Load the cascades
     if (!face_cascade.load(face_cascade_name))
     {
@@ -30,6 +33,11 @@ int main(int argc, const char **argv)
         cout << "--(!)Error loading eyes cascade\n";
         return -1;
     };
+    if (!profile_cascade.load(profile_cascade_name))
+    {
+        cout << "--(!)Error loading profile cascade\n";
+        return -1;
+    }
     int camera_device = 0;
     VideoCapture capture;
     //-- 2. Read the video stream
@@ -69,11 +77,12 @@ void detectAndDisplay(Mat frame)
 
     std::vector<Rect> faces;
     std::vector<Rect> eyes;
+    std::vector<Rect> profile;
 
     auto t1 = chrono::high_resolution_clock::now();
     
     face_cascade.detectMultiScale(frame_gray, faces);
-
+    profile_cascade.detectMultiScale(frame_gray, profile);
     
 
     auto t2 = chrono::high_resolution_clock::now();

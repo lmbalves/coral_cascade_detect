@@ -13,23 +13,35 @@ void detectAndDisplay(Mat frame);
 
 CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
+CascadeClassifier profile_cascade;
 
 int main(int argc, const char **argv)
 {
 
     String face_cascade_name = "haarcascade_frontalface_alt_tree.xml";
     String eyes_cascade_name = "haarcascade_eye_tree_eyeglasses.xml";
+    String profile_cascade_name = "haarcascade_profileface.xml";
+    
     //-- 1. Load the cascades
+
+    int devices = omp_get_num_devices();
+    cout << devices << "\n";
     if (!face_cascade.load(face_cascade_name))
     {
         cout << "--(!)Error loading face cascade\n";
         return -1;
-    };
+    }
     if (!eyes_cascade.load(eyes_cascade_name))
     {
         cout << "--(!)Error loading eyes cascade\n";
         return -1;
-    };
+    }
+    if (!profile_cascade.load(profile_cascade_name))
+    {
+        cout << "--(!)Error loading profile cascade\n";
+        return -1;
+    }
+
     auto camera_device = 0;
     VideoCapture capture(camera_device);
     //-- 2. Read the video stream
@@ -68,23 +80,36 @@ void detectAndDisplay(Mat frame)
     //-- Detect faces
     //cout << "Total Devices: " << omp_get_num_devices() << endl;
     //omp_set_default_device
-    omp_set_num_threads(2);
+    omp_set_num_threads(3);
     std::vector<Rect> faces;
     std::vector<Rect> eyes;
+    std::vector<Rect> profile;
 
     #pragma omp parallel
     {
         auto t1 = chrono::high_resolution_clock::now();
         #pragma omp sections
         {
-            //printf("Hello World... from thread = %d\n",
-            //       omp_get_thread_num());
+
 
             #pragma omp section
+            {
                 face_cascade.detectMultiScale(frame_gray, faces);
-
+                //printf("Hello World... from thread = %d\n",
+                //omp_get_thread_num());
+            }
             #pragma omp section
+            {
                 eyes_cascade.detectMultiScale(frame_gray, eyes);
+                //printf("Hello World... from thread = %d\n",
+                //omp_get_thread_num());
+            }
+            #pragma omp section
+            {
+                profile_cascade.detectMultiScale(frame_gray, profile);
+                //printf("Hello World... from thread = %d\n",
+                //omp_get_thread_num());
+            }
         }
         #pragma omp critical
         {
@@ -102,6 +127,11 @@ void detectAndDisplay(Mat frame)
             {
                 Point center(faces[i].x + faces[i].width / 2, faces[i].y + faces[i].height / 2);
                 ellipse(frame, center, Size(faces[i].width / 1.5, faces[i].height), 0, 0, 360, Scalar(255, 0, 0), 4);
+            }
+            for (size_t i = 0; i < profile.size(); i++)
+            {
+                Point center(profile[i].x + profile[i].width / 2, profile[i].y + profile[i].height / 2);
+                ellipse(frame, center, Size(profile[i].width / 1.5, profile[i].height), 0, 0, 360, Scalar(255, 0, 0), 4);
             }
             imshow("Capture - Face detection", frame);
         }
