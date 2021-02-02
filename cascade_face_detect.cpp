@@ -21,7 +21,7 @@ int main(int argc, const char **argv)
     String face_cascade_name = "haarcascade_frontalface_alt_tree.xml";
     String eyes_cascade_name = "haarcascade_eye_tree_eyeglasses.xml";
     String profile_cascade_name = "haarcascade_profileface.xml";
-    
+
     //-- 1. Load the cascades
 
     int devices = omp_get_num_devices();
@@ -80,18 +80,20 @@ void detectAndDisplay(Mat frame)
     //-- Detect faces
     //cout << "Total Devices: " << omp_get_num_devices() << endl;
     //omp_set_default_device
-    omp_set_num_threads(3);
+
     std::vector<Rect> faces;
     std::vector<Rect> eyes;
     std::vector<Rect> profile;
 
-    #pragma omp parallel
+    auto t1 = chrono::high_resolution_clock::now();
+
+    #pragma omp allocate(frame_gray) allocator(omp_high_bw_mem_alloc)
+
+    #pragma omp parallel num_threads(3)
     {
-        auto t1 = chrono::high_resolution_clock::now();
-        #pragma omp sections
+
+        #pragma omp sections firstprivate(frame_gray) nowait
         {
-
-
             #pragma omp section
             {
                 face_cascade.detectMultiScale(frame_gray, faces);
@@ -111,29 +113,30 @@ void detectAndDisplay(Mat frame)
                 //omp_get_thread_num());
             }
         }
-        #pragma omp critical
-        {
-            auto t2 = chrono::high_resolution_clock::now();
-            auto duration = chrono::duration_cast<chrono::microseconds>(t2 - t1).count();
-            std::cout << duration << "\n";
-
-            for (size_t j = 0; j < eyes.size(); j++)
-            {
-                Point eye_center(eyes[j].x + eyes[j].width / 2, eyes[j].y + eyes[j].height / 2);
-                int radius = cvRound((eyes[j].width + eyes[j].height) * 0.25);
-                circle(frame, eye_center, radius, Scalar(255, 0, 0), 4);
-            }
-            for (size_t i = 0; i < faces.size(); i++)
-            {
-                Point center(faces[i].x + faces[i].width / 2, faces[i].y + faces[i].height / 2);
-                ellipse(frame, center, Size(faces[i].width / 1.5, faces[i].height), 0, 0, 360, Scalar(255, 0, 0), 4);
-            }
-            for (size_t i = 0; i < profile.size(); i++)
-            {
-                Point center(profile[i].x + profile[i].width / 2, profile[i].y + profile[i].height / 2);
-                ellipse(frame, center, Size(profile[i].width / 1.5, profile[i].height), 0, 0, 360, Scalar(255, 0, 0), 4);
-            }
-            imshow("Capture - Face detection", frame);
-        }
     }
+
+    auto t2 = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(t2 - t1).count();
+    std::cout << duration << "\n";
+
+    for (size_t j = 0; j < eyes.size(); j++)
+    {
+        Point eye_center(eyes[j].x + eyes[j].width / 2, eyes[j].y + eyes[j].height / 2);
+        int radius = cvRound((eyes[j].width + eyes[j].height) * 0.25);
+        circle(frame, eye_center, radius, Scalar(255, 0, 0), 4);
+    }
+
+    for (size_t i = 0; i < faces.size(); i++)
+    {
+        Point center(faces[i].x + faces[i].width / 2, faces[i].y + faces[i].height / 2);
+        ellipse(frame, center, Size(faces[i].width / 1.5, faces[i].height), 0, 0, 360, Scalar(255, 0, 0), 4);
+    }
+
+    for (size_t i = 0; i < profile.size(); i++)
+    {
+        Point center(profile[i].x + profile[i].width / 2, profile[i].y + profile[i].height / 2);
+        ellipse(frame, center, Size(profile[i].width / 1.5, profile[i].height), 0, 0, 360, Scalar(255, 0, 0), 4);
+    }
+
+    imshow("Capture - Face detection", frame);
 }
